@@ -31,9 +31,11 @@ def main(args=None):
 
     while rclpy.ok():
         rclpy.spin_once(basic_robot_control)
+        print(basic_robot_control.future.done())
         if basic_robot_control.future.done():
             try:
                 response = basic_robot_control.future.result()
+                print(response)
             except Exception as e:
                 basic_robot_control.get_logger().error('Service call failed %r' % (e,))
             break
