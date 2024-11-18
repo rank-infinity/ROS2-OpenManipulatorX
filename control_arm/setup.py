@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'end_effector = control_arm.kinematics:main'
+            'end_effector = control_arm.kinematics:main',
+            'move_service = control_arm.move_service:main'
         ],
     },
 )

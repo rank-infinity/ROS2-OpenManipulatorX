@@ -3,6 +3,7 @@ import rclpy.logging
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Pose
+from std_msgs.msg import Float32MultiArray
 
 from scipy.spatial.transform import Rotation
 import numpy as np
@@ -22,6 +23,19 @@ class EndEffector(Node):
         self.pose_publisher = self.create_publisher(
             Pose,
             'pose',
+            10
+        )
+
+        self.move_to_pose_subscription = self.create_subscription(
+            Pose,
+            '/move_position',
+            self.calculate_angles_cb,
+            10
+        )
+
+        self.joint_state_publisher = self.create_publisher(
+            Float32MultiArray,
+            '/move_joints',
             10
         )
 
@@ -49,6 +63,13 @@ class EndEffector(Node):
         eef_pose_mat = self.arm.get_eef_pose(joint_state)   # get the end effector pose as a 4x4 homogenous matrix
         pose = self.mat2Pose(eef_pose_mat)                  # convert the pose to geometry_msgs/Pose
         self.pose_publisher.publish(pose)
+
+    def calculate_angles_cb(self, msg):
+        angles= self.arm.get_joint_angles(msg)
+        print("Needed joint configuration- ", angles)
+        msg= Float32MultiArray()
+        msg.data= angles
+        self.joint_state_publisher.publish(msg)
         
      
         
