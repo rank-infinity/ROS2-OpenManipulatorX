@@ -8,7 +8,7 @@ from scipy.spatial.transform import Rotation
 import numpy as np
 from .arm import Arm
 
-class EndEffector(Node):
+class EndEffectorPose(Node):
     def __init__(self, arm_params=None):
         super().__init__('end_effector')
         
@@ -40,7 +40,7 @@ class EndEffector(Node):
         pose.orientation.z = q[2]
         pose.orientation.w = q[3]
 
-        # print(Rotation.from_quat(q).as_euler("XYZ"))
+        print(Rotation.from_quat(q).as_euler("XYZ"))
 
         return pose
 
@@ -62,7 +62,7 @@ def main(args=None):
                   [np.deg2rad(-79.38),  0,        124,       0],
                   [0,                   0,        133.4,     0]]
     
-    eef = EndEffector(arm_params) 
+    eef = EndEffectorPose(arm_params) 
     rclpy.spin(eef)
 
     # would be destroyed anyways by the garbage collector, but just to be sure!

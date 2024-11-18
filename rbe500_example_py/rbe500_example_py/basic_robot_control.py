@@ -20,7 +20,12 @@ class BasicRobotControl(Node):
         request.planning_group = ''
         request.joint_position.joint_name = ['joint1', 'joint2', 'joint3', 'joint4', 'gripper']
         request.joint_position.position = [0.0, 0.0, 0.0, 0.0, 0.0]
-        request.path_time = 5.0
+        request.path_time = 0.5
+
+        try:
+            self.goal_joint_space.call_async(self.goal_joint_space_req)
+        except Exception as e:
+            self.get_logger().info('Sending Goal Joint failed %r' % (e,))
 
         self.future = self.client.call_async(request)
 
