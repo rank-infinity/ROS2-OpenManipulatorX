@@ -1,161 +1,3 @@
-# import rclpy
-# from rclpy.node import Node
-# from open_manipulator_msgs.srv import SetJointPosition
-# from std_msgs.msg import Float32MultiArray
-# from geometry_msgs.msg import Pose
-# import sys
-# from .arm import Arm
-# from custom_interfaces.srv import Pose2Joint
-# import time
-
-# class RobotControl(Node):
-#     def __init__(self):
-#         super().__init__('robot_control')
-#         self.client = self.create_client(SetJointPosition, 'goal_joint_space_path')
-#         self.tool_control = self.create_client(SetJointPosition, 'goal_tool_control')
-#         while not self.client.wait_for_service(timeout_sec=1.0):
-#             if not rclpy.ok():
-#                 self.get_logger().error('Interrupted while waiting for the service. Exiting.')
-#                 sys.exit(0)
-#             self.get_logger().info('Service not available, waiting again...')
-#         self.tool_control_req = SetJointPosition.Request()
-#         # self.send_request()
-
-#     def send_tool_control_request(self, open=True):
-#         if open:
-#             gripper = 0.01
-#         else:
-#             gripper = -0.01
-#         self.tool_control_req.joint_position.joint_name = ['joint1', 'joint2',
-#         'joint3', 'joint4', 'gripper']
-#         self.tool_control_req.joint_position.position = [0.0, 0.0, 0.0, 0.0, gripper]
-#         self.tool_control_req.path_time = 1.0
-#         try:
-#             print("Opening")
-#             # self.tool_control_result = self.tool_control.call_async(self.tool_control_req)
-#             self.future = self.tool_control.call_async(self.tool_control_req)
-#         except Exception as e:
-#             self.get_logger().info('Tool control failed %r' % (e,))
-
-#         rclpy.spin_until_future_complete(self, self.future)
-#         print("opened")
-
-#     def send_request(self, position=[0.0, 0.0, 0.0, 0.0, 0.0], path_time=1.0):
-#         request = SetJointPosition.Request()
-#         request.planning_group = ''
-#         request.joint_position.joint_name = ['joint1', 'joint2', 'joint3', 'joint4', 'gripper']
-#         request.joint_position.position = position
-#         request.path_time = path_time
-
-#         try:
-#             self.goal_joint_space.call_async(self.goal_joint_space_req)
-#         except Exception as e:
-#             self.get_logger().info('Sending Goal Joint failed %r' % (e,))
-
-#         self.future = self.client.call_async(request)
-#         rclpy.spin_until_future_complete(self, self.future)
-#         print("Reached Position!")
-
-# class Pickup(Node):
-#     def __init__(self, object_position):
-#         super().__init__('inverse_kinematics')
-#         self.arm = Arm()
-#         self.robot_control = RobotControl()
-#         self.inv_kin_client = self.create_client(Pose2Joint, 'calculate_joint_values')
-#         while not self.inv_kin_client.wait_for_service(timeout_sec=1.0):
-#             self.get_logger().info('Inverse Kinematics service not available')
-#         self.object_pose = Pose()
-#         self.object_pose.position.x = object_position[0]
-#         self.object_pose.position.y = object_position[1]
-#         self.object_pose.position.z = object_position[2]
-#         self.object_pose.orientation.x = 0.5
-#         self.object_pose.orientation.y = 0.5
-#         self.object_pose.orientation.z = 0.5
-#         self.object_pose.orientation.w = 0.5
-
-#         self.sub_joint_values = self.create_subscription(
-#             Float32MultiArray,
-#             '/joint_values',
-#             self.joint_values_cb,
-#             10
-#         )
-#         self.joint_values = None
-        
-
-#     def joint_values_cb(self, msg:Float32MultiArray):
-#         print("Joint values cb", msg)
-#         self.joint_values = msg
-#         above_object_joint_states = []
-#         above_object_joint_states.append(float(msg.data[0]))
-#         above_object_joint_states.append(float(msg.data[1]))
-#         above_object_joint_states.append(float(msg.data[2]))
-#         above_object_joint_states.append(float(msg.data[3]))
-#         above_object_joint_states.append(float(0.0))
-#         self.robot_control.send_request(above_object_joint_states)
-        
-
-#     def set_object_pose(self, object_pose:Pose):
-#         self.object_pose = object_pose
-
-#     def pickup_object(self):
-#         above_object_pose = self.object_pose
-#         above_object_pose.position.z = above_object_pose.position.z + 200.0
-
-#         request = Pose2Joint.Request()
-#         request.pose = above_object_pose
-#         resp = self.inv_kin_client.call_async(request)
-#         # above_object_joint_states
-
-#         time.sleep(1)
-#         self.robot_control.send_tool_control_request(open=True)
-#         time.sleep(2)
-
-#         # self.object_pose.position.z = self.object_pose.position.z - 100
-#         # request = Pose2Joint.Request()
-#         # request.pose = self.object_pose
-#         # resp = self.inv_kin_client.call_async(request)
-
-#         # time.sleep(2)
-#         # self.robot_control.send_tool_control_request(open=False)
-#         # time.sleep(2)
-
-#         # while True:
-#         #     print(resp)
-#         #     time.sleep(0.1)
-#         # rclpy.spin_until_future_complete(self, resp)
-#         # print(resp)
-#         # while True:
-#         #     print(self.joint_values)
-        
-#         # above_object_joint_states = resp.array.data
-#         # print(above_object_joint_states)
-
-#         # print(above_object_joint_states)
-#         # above_object_joint_states = self.inv_kin_client.call(above_object_pose).append(float(0.0))
-#         # object_joint_states = self.inv_kin_client.call(object_joint_states).append(float(0.0))
-
-#         # self.robot_control.send_request(above_object_joint_states)
-#         # self.robot_control.send_tool_control_request(open=True)
-#         # time.sleep(1)
-#         # self.robot_control.send_request(object_joint_states)
-#         # self.robot_control.send_tool_control_request(open=False)   
-#         # time.sleep(1)     
-#         # self.robot_control.send_request(above_object_joint_states)
-
-
-# def main(args=None):
-#     rclpy.init(args=args)
-    
-#     object_position = [180.0, 90.0, 0.0]
-#     p = Pickup(object_position)
-#     p.pickup_object()
-#     rclpy.spin(p)
-
-#     rclpy.shutdown()
-
-# if __name__ == '__main__':
-#     main()
-
 import rclpy
 from rclpy.node import Node
 from open_manipulator_msgs.srv import SetJointPosition
@@ -201,11 +43,17 @@ class RobotControl(Node):
         request = SetJointPosition.Request()
         request.planning_group = ''
         request.joint_position.joint_name = ['joint1', 'joint2', 'joint3', 'joint4', 'gripper']
-        request.joint_position.position = position
+        send_position = []
+        send_position.append(position[0])
+        send_position.append(position[1])
+        send_position.append(position[2])
+        send_position.append(position[3])
+        send_position.append(0.0)
+        request.joint_position.position = send_position
         request.path_time = path_time
 
         try:
-            self.goal_joint_space.call_async(self.goal_joint_space_req)
+            self.client.call_async(request)
         except Exception as e:
             self.get_logger().info('Sending Goal Joint failed %r' % (e,))
 
@@ -220,55 +68,61 @@ class Pickup(Node):
         self.robot_control = RobotControl()
 
         #UNCOMMENT THIS AND MAKE IT WORK
-        # self.inv_kin_client = self.create_client(Pose2Joint, 'calcualte_joint_values')
-        # while not self.inv_kin_client.wait_for_service(timeout_sec=1.0):
-        #     self.get_logger().info('Inverse Kinematics service not available')
+        self.inv_kin_client = self.create_client(Pose2Joint, 'calculate_joint_values')
+        while not self.inv_kin_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('Inverse Kinematics service not available')
         
-        self.object_pose = object_pose
+        self.req = Pose2Joint.Request()
+        self.object_pose = Pose()
+        if(object_pose!=None):
+            self.object_pose.position.x= object_pose[0]
+            self.object_pose.position.y= object_pose[1]
+            self.object_pose.position.z= object_pose[2]
+
+    def send_request(self, pose):
+        self.req.pose = pose
+        self.future = self.inv_kin_client.call_async(self.req)
+        rclpy.spin_until_future_complete(self, self.future)
+        return self.future.result()
 
     def set_object_pose(self, object_pose:Pose):
         self.object_pose = object_pose
 
     def pickup_object(self):
-        # above_object_pose = self.object_pose
+        above_object_pose = Pose() 
+        above_object_pose.position.x = self.object_pose.position.x
+        above_object_pose.position.y = self.object_pose.position.y
+        above_object_pose.position.z = self.object_pose.position.z + 200.0
+        above_object_pose.orientation.x = 0.7
+        above_object_pose.orientation.y = 0.0
+        above_object_pose.orientation.z = 0.0
+        above_object_pose.orientation.w = 0.7
 
-        # above_object_pose.position.z = 100
-        # above_object_pose.orientation.x = 0.0
-        # above_object_pose.orientation.y = 0.0
-        # above_object_pose.orientation.z = 0.0
-        # above_object_pose.orientation.w = 1.0
-
-        # self.object_pose.orientation.x = 0.0
-        # self.object_pose.orientation.y = 0.0
-        # self.object_pose.orientation.z = 0.0
-        # self.object_pose.orientation.w = 1.0
-
-
-
-        # USE REQUEST RESPONSE FOR CLINET, DONT DIRECTLY call
+        self.object_pose.position.z = 100.0
+        self.object_pose.orientation.x = 0.0
+        self.object_pose.orientation.y = 0.0
+        self.object_pose.orientation.z = -0.7451132
+        self.object_pose.orientation.w = -0.6669381
 
 
-
-        # above_object_joint_states = self.inv_kin_client.call(above_object_pose)
-        # object_joint_states = self.inv_kin_client.call(object_joint_states)
-        above_object_joint_states = [-0.707, 0.3, -0.3, 1.4, 0.0]
-        object_joint_states = [-0.707, 0.3, 0.3, 1.4, 0.0]
-        
-        # self.robot_control.send_request(position=[0.7, 0.0,0.0,0.0,0.0])
+        above_object_joint_states = self.send_request(above_object_pose).array.data.tolist()
+        object_joint_states = self.send_request(self.object_pose).array.data.tolist()
 
         self.robot_control.send_request(above_object_joint_states)
+        time.sleep(0.5)
         self.robot_control.send_tool_control_request(open=True)
-        time.sleep(1)
+        time.sleep(0.1)
         self.robot_control.send_request(object_joint_states)
+        time.sleep(0.5)
         self.robot_control.send_tool_control_request(open=False)   
         time.sleep(1)     
         self.robot_control.send_request(above_object_joint_states)
-
+        time.sleep(0.5)
 
 def main(args=None):
     rclpy.init(args=args)
     
-    object_position = [0.0,0.0,0.0]
+    object_position = [150.0,100.0,0.0]
     p = Pickup(object_position)
     p.pickup_object()
 

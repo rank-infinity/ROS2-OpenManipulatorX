@@ -6,7 +6,7 @@ from geometry_msgs.msg import Pose
 class MoveRobot(Node):
     def __init__(self):
         super().__init__('move_robot')
-        self.client = self.create_client(Pose2Joint, 'move_to_pose')
+        self.client = self.create_client(Pose2Joint, 'calculate_joint_values')
         
         while not self.client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('service not available')
@@ -37,7 +37,8 @@ def main(args=None):
 
     response = move_client.send_request(pose)
 
-    print("Response- ", response)
+    print("Response- ", response.array.data)
+    print(type(response.array.data))
     move_client.destroy_node()
     rclpy.shutdown()
 
