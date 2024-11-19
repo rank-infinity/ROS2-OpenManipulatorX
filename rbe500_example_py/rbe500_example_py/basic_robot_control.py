@@ -19,7 +19,7 @@ class BasicRobotControl(Node):
         request = SetJointPosition.Request()
         request.planning_group = ''
         request.joint_position.joint_name = ['joint1', 'joint2', 'joint3', 'joint4', 'gripper']
-        request.joint_position.position = [0.1, 0.0, 0.0, 0.0, 0.0]
+        request.joint_position.position = [0.4, 0.0, 0.0, 0.0, 0.3]
         request.path_time = 0.5
 
         try:
@@ -28,6 +28,7 @@ class BasicRobotControl(Node):
             self.get_logger().info('Sending Goal Joint failed %r' % (e,))
 
         self.future = self.client.call_async(request)
+        rclpy.spin_until_future_complete(self, self.future)
 
 def main(args=None):
     rclpy.init(args=args)

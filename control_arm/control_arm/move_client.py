@@ -17,7 +17,7 @@ class MoveClientAsync(Node):
         self.req= Move.Request()
     
     def send_request(self, pose):
-        self.req.pose= pose
+        self.req.pose = pose
         self.future = self.client.call_async(self.req)
         rclpy.spin_until_future_complete(self, self.future)
         return self.future.result()
