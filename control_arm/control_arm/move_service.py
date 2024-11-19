@@ -14,9 +14,12 @@ class MoveService(Node):
         self.serv= self.create_service(Move, 'move_to_pose', self.move_to_pose_cb)
 
     def move_to_pose_cb(self, request, response):
-        angles= self.arm.get_joint_angles(request)
+        angles= self.arm.get_joint_angles(request.pose)
         print("Needed joint configuration- ", angles)
-        response = angles
+        
+        float_array= Float32MultiArray()
+        float_array.data.extend(angles)
+        response.array= float_array
         return response
     
 

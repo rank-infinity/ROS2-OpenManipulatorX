@@ -21,7 +21,8 @@ setup(
     entry_points={
         'console_scripts': [
             'end_effector = control_arm.forward_kinematics:main',
-            'move_service = control_arm.move_service:main'
+            'move_service = control_arm.move_service:main',
+            'move_client = control_arm.move_client:main'
         ],
     },
 )

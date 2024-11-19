@@ -19,7 +19,7 @@ class MoveClientAsync(Node):
     def send_request(self, pose):
         self.req.pose= pose
         self.future = self.client.call_async(self.req)
-        rclpy.spin_unitl_future_complete(self.future)
+        rclpy.spin_until_future_complete(self, self.future)
         return self.future.result()
     
 
@@ -27,7 +27,20 @@ def main(args=None):
     rclpy.init(args=args)
 
     move_client = MoveClientAsync()
-    
+    request = Move.Request()
+
+    pose = Pose()
+    pose.position.x = 1.0
+    pose.position.y = 2.0
+    pose.position.z = 3.0
+    pose.orientation.x = 0.0
+    pose.orientation.y = 0.0
+    pose.orientation.z = 0.0
+    pose.orientation.w = 1.0
+
+    response = move_client.send_request(pose)
+
+    print("Response- ", response)
     move_client.destroy_node()
     rclpy.shutdown()
 
