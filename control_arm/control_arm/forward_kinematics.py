@@ -22,13 +22,13 @@ class EndEffectorPose(Node):
         )        
         self.pose_publisher = self.create_publisher(
             Pose,
-            'pose',
+            '/pose',
             10
         )
 
         self.move_to_pose_subscription = self.create_subscription(
             Pose,
-            '/move_position',
+            '/pose',
             self.calculate_angles_cb,
             10
         )
@@ -54,12 +54,13 @@ class EndEffectorPose(Node):
         pose.orientation.z = q[2]
         pose.orientation.w = q[3]
 
-        print(Rotation.from_quat(q).as_euler("XYZ"))
+        # print(Rotation.from_quat(q).as_euler("XYZ"))
 
         return pose
 
     def joint_state_cb(self, msg:JointState):
         joint_state = np.array(msg.position[0:4])           # get the joint states of the first 4 actuators
+        # print(joint_state)
         eef_pose_mat = self.arm.get_eef_pose(joint_state)   # get the end effector pose as a 4x4 homogenous matrix
         pose = self.mat2Pose(eef_pose_mat)                  # convert the pose to geometry_msgs/Pose
         self.pose_publisher.publish(pose)
@@ -78,9 +79,13 @@ def main(args=None):
     
     # same as DH params of the arm with q1,q1,q3,q4 = 0
     # we will dynamically add the qis to this to get the realtime dh params to get forward/inverse kinematics
-    arm_params = [[0,                   96.326,   0,         np.deg2rad(90)],
-                  [np.deg2rad(79.38),   0,        130.2305,  0],
-                  [np.deg2rad(-79.38),  0,        124,       0],
+    # arm_params = [[0,                   96.326,   0,         np.deg2rad(90)],
+    #               [np.deg2rad(79.38),   0,        130.2305,  0],
+    #               [np.deg2rad(-79.38),  0,        124,       0],
+    #               [0,                   0,        133.4,     0]]
+    arm_params = [[0,                   96.326,   0,         np.deg2rad(-90)],
+                  [np.deg2rad(-79.38),   0,        130.2305,  0],
+                  [np.deg2rad(79.38),  0,        124,       0],
                   [0,                   0,        133.4,     0]]
     
     eef = EndEffectorPose(arm_params) 

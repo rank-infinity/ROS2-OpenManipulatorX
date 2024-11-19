@@ -19,7 +19,7 @@ class BasicRobotControl(Node):
         request = SetJointPosition.Request()
         request.planning_group = ''
         request.joint_position.joint_name = ['joint1', 'joint2', 'joint3', 'joint4', 'gripper']
-        request.joint_position.position = [0.0, 0.0, 0.0, 0.0, 0.0]
+        request.joint_position.position = [0.1, 0.0, 0.0, 0.0, 0.0]
         request.path_time = 0.5
 
         try:

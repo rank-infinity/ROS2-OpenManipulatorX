@@ -22,9 +22,6 @@ class MoveClientAsync(Node):
         rclpy.spin_unitl_future_complete(self.future)
         return self.future.result()
     
-    
-
-    
 
 def main(args=None):
     rclpy.init(args=args)

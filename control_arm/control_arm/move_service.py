@@ -5,8 +5,7 @@ from rclpy.node import Node
 from .arm import Arm
 from std_msgs.msg import Float32MultiArray
 
-class MoveService(Node):
-    
+class MoveService(Node):   
 
     def __init__(self):
         super().__init__('move_service')
