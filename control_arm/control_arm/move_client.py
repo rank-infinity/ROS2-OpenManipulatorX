@@ -1,20 +1,17 @@
-import sys
-
-from custom_interfaces.srv import Move
+from custom_interfaces.srv import Pose2Joint
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Pose
 
-
-class MoveClientAsync(Node):
+class MoveRobot(Node):
     def __init__(self):
-        super().__init__('move_client_aync')
-        self.client = self.create_client(Move, 'move_to_pose')
+        super().__init__('move_robot')
+        self.client = self.create_client(Pose2Joint, 'move_to_pose')
         
         while not self.client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('service not available')
         
-        self.req= Move.Request()
+        self.req = Pose2Joint.Request()
     
     def send_request(self, pose):
         self.req.pose = pose
@@ -26,8 +23,8 @@ class MoveClientAsync(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    move_client = MoveClientAsync()
-    request = Move.Request()
+    move_client = MoveRobot()
+    request = Pose2Joint.Request()
 
     pose = Pose()
     pose.position.x = 1.0

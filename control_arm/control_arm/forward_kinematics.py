@@ -67,7 +67,7 @@ class EndEffectorPose(Node):
 
     def calculate_angles_cb(self, msg):
         angles= self.arm.get_joint_angles(msg)
-        print("Needed joint configuration- ", angles)
+        # print("Needed joint configuration- ", angles)
         msg= Float32MultiArray()
         msg.data= angles
         self.joint_state_publisher.publish(msg)

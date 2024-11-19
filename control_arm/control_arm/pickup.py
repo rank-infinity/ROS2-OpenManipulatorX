@@ -56,38 +56,30 @@ class RobotControl(Node):
         print("Reached Position!")
 
 class Pickup(Node):
-    def __init__(self, object_pose:Pose=None):
+    def __init__(self, object_position):
         super().__init__('inverse_kinematics')
         self.arm = Arm()
         self.robot_control = RobotControl()
         # self.inv_kin_client = self.create_client(Pose2Joint, 'move_to_pose')
         # while not self.inv_kin_client.wait_for_service(timeout_sec=1.0):
         #     self.get_logger().info('Inverse Kinematics service not available')
-        self.object_pose = object_pose
+        self.object_pose = Pose()
+        self.object_pose.position.x = object_position[0]
+        self.object_pose.position.y = object_position[1]
+        self.object_pose.position.z = object_position[2]
+        self.object_pose.orientation.x = 0.5
+        self.object_pose.orientation.y = 0.5
+        self.object_pose.orientation.z = 0.5
+        self.object_pose.orientation.w = 0.5
 
     def set_object_pose(self, object_pose:Pose):
         self.object_pose = object_pose
 
     def pickup_object(self):
-        # above_object_pose = self.object_pose
-
-        # above_object_pose.position.z = 100
-        # above_object_pose.orientation.x = 0.0
-        # above_object_pose.orientation.y = 0.0
-        # above_object_pose.orientation.z = 0.0
-        # above_object_pose.orientation.w = 1.0
-
-        # self.object_pose.orientation.x = 0.0
-        # self.object_pose.orientation.y = 0.0
-        # self.object_pose.orientation.z = 0.0
-        # self.object_pose.orientation.w = 1.0
-
-        # above_object_joint_states = self.inv_kin_client.call(above_object_pose)
-        # object_joint_states = self.inv_kin_client.call(object_joint_states)
-        above_object_joint_states = [-0.707, 0.3, -0.3, 1.4, 0.0]
-        object_joint_states = [-0.707, 0.3, 0.3, 1.4, 0.0]
-        
-        # self.robot_control.send_request(position=[0.7, 0.0,0.0,0.0,0.0])
+        above_object_pose = self.object_pose
+        above_object_pose.position.z = above_object_pose.position.z - 200.0 
+        above_object_joint_states = self.inv_kin_client.call(above_object_pose).append(float(0.0))
+        object_joint_states = self.inv_kin_client.call(object_joint_states).append(float(0.0))
 
         self.robot_control.send_request(above_object_joint_states)
         self.robot_control.send_tool_control_request(open=True)
@@ -101,7 +93,7 @@ class Pickup(Node):
 def main(args=None):
     rclpy.init(args=args)
     
-    object_position = [0.0,0.0,0.0]
+    object_position = [200.0, 100.0, 0.0]
     p = Pickup(object_position)
     p.pickup_object()
 
