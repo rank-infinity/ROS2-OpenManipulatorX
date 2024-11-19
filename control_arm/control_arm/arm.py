@@ -61,10 +61,11 @@ class Arm:
         return all_H
 
     def get_joint_angles(self, pose):
+        print(pose)
         (l1, l2a, l2b, l2, l3, l4)= self.__get_link_values()
         quaternion = [pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w]
         R4_0 = R.from_quat(quaternion).as_matrix()
-
+        print(R4_0)
         o4_0 = np.array([pose.position.x, pose.position.y, pose.position.z])
         o3_0 = o4_0 - l4*(R4_0 @ np.array([[1.0], [0.0], [0.0]])).flatten()
 
