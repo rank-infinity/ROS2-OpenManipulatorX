@@ -22,6 +22,10 @@ setup(
         'console_scripts': [
             'end_effector = control_arm.forward_kinematics:main',
             'inverse_kinematics = control_arm.inverse_kinematics:main',
+<<<<<<< HEAD
+=======
+            'velocity_kinematics = control_arm.velocity_kinematics:main',
+>>>>>>> 55be825 (Added velocity node Assigment 2 part 1)
             'move_client = control_arm.move_client:main',
             'pickup = control_arm.pickup:main'
         ],
