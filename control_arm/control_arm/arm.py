@@ -2,13 +2,11 @@ import numpy as np
 from scipy.spatial.transform import Rotation as R
 
 class Arm:
-<<<<<<< HEAD
     def __init__(self, arm_params=None):
         self.arm_params = arm_params
 
     def set_arm_params(self, arm_params):
         self.arm_params = arm_params
-=======
     def __init__(self, arm_params=None, frame_origins=None, z_axis=None):
         self.arm_params = arm_params
         self.frame_origins= frame_origins
@@ -23,7 +21,6 @@ class Arm:
 
     def set_z_axis(self, z_axis):
         self.z_axis= z_axis
->>>>>>> 55be825 (Added velocity node Assigment 2 part 1)
     
     def __calculate_dh_transform(self, theta, d, a, alpha):
         return np.array([
@@ -42,11 +39,9 @@ class Arm:
         a4 = 133.4  # Link 4 length
         return np.array([a1, l2a, l2b, a2,  a3, a4])
 
-<<<<<<< HEAD
     def calculate_jacobian(self):
         pass
     
-=======
 
 # UNCOMMENT AND WORK ON THIS
     # def calculate_jacobian(self, joint_states):
@@ -89,7 +84,6 @@ class Arm:
         R= H[:3,:3]
         return R @ z_axis
         
->>>>>>> 55be825 (Added velocity node Assigment 2 part 1)
     def get_eef_pose(self, joint_states):
         if self.arm_params is None:
             raise TypeError("arm params for the arm is None, expected a list")
@@ -122,8 +116,6 @@ class Arm:
 
         return all_H
 
-<<<<<<< HEAD
-=======
     def get_J(self, joint_states):
         all_H= self.get_all_H(joint_states)
         for i in range(len(joint_states)):
@@ -158,7 +150,6 @@ class Arm:
         return (o4-o)[:3]    
 
 
->>>>>>> 55be825 (Added velocity node Assigment 2 part 1)
     def get_joint_angles(self, pose):
         print(pose)
         (l1, l2a, l2b, l2, l3, l4)= self.__get_link_values()

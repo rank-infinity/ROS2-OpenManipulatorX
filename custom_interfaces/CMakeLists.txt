@@ -9,24 +9,19 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
-<<<<<<< HEAD
-=======
 find_package(sensor_msgs REQUIRED)
->>>>>>> 55be825 (Added velocity node Assigment 2 part 1)
 find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/Pose2Joint.srv"
-<<<<<<< HEAD
-  DEPENDENCIES geometry_msgs  # Add packages that above messages depend on, in this case geometry_msgs for Sphere.msg
-  std_msgs
-=======
   "srv/Joint2Twist.srv"
   "srv/Twist2Joint.srv"
   DEPENDENCIES geometry_msgs  # Add packages that above messages depend on, in this case geometry_msgs for Sphere.msg
   std_msgs
+  
+  DEPENDENCIES geometry_msgs  # Add packages that above messages depend on, in this case geometry_msgs for Sphere.msg
+  std_msgs
   sensor_msgs
->>>>>>> 55be825 (Added velocity node Assigment 2 part 1)
 )
 # uncomment the following section in order to fill in
 # further dependencies manually.

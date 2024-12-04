@@ -76,11 +76,8 @@ class EndEffectorPose(Node):
         
 def main(args=None):
     rclpy.init(args=args)
-<<<<<<< HEAD
     
-=======
     # theta, d, a, alpha
->>>>>>> 55be825 (Added velocity node Assigment 2 part 1)
     # same as DH params of the arm with q1,q1,q3,q4 = 0
     # we will dynamically add the qis to this to get the realtime dh params to get forward/inverse kinematics
     # arm_params = [[0,                   96.326,   0,         np.deg2rad(90)],
