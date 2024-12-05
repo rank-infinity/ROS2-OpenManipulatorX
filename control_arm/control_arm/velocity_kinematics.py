@@ -17,7 +17,7 @@ class VeloctiyKinematics(Node):
         super().__init__('velocity_kinematics')
         self.arm = Arm(arm_params)
 
-        self.joint_positions=[1,1,1,1]
+        self.joint_positions=[0,0,0,0]
 
         #need joint states to calculate jacobian
         self.joint_state_subscription = self.create_subscription( # subscribe to the topic publishing q1,q2,q3
@@ -36,6 +36,10 @@ class VeloctiyKinematics(Node):
 
 
     # ros2 service call /calculate_eef_vel custom_interfaces/srv/Joint2Twist "{joint_velocity: { data: [0.5, 1.0, 1.0, 1.0]}}"
+    # [0.005031858570873737, -0.3949567675590515, 0.2614765763282776, -0.1676884889602661]
+    # -0.0039049393963068724, -0.006756721995770931, 0.0, 0.006756721995770931
+    # ros2 service call /calculate_eef_vel custom_interfaces/srv/Joint2Twist "{joint_velocity: { data: [-0.0039049393963068724, -0.006756721995770931, 0.0, 0.006756721995770931]}}"
+    
     #Joint to Twist
     #Need to send joint positions
     def calc_eef_cb(self, request, response):
@@ -78,11 +82,11 @@ class VeloctiyKinematics(Node):
                                [twist.angular.z]])
 
         joint_values= np.matmul(Jinv, twist_array)
-        print("joint values- ", joint_values[0])
-        joint_info= JointState()
+        print("joint values- ", joint_values)
         #ensure 4 values are put in
-        joint_info.velocity= joint_values[0].tolist()
-        response.joint_state = joint_info
+        vals= Float32MultiArray()
+        vals.data= joint_values.flatten().tolist()
+        response.joint_velocity = vals
         print(response)
         return response      
 

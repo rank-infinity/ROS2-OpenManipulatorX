@@ -63,26 +63,26 @@ class Arm:
     #     translated_z = 
 
     
-    def get_H_Jacobian(self, joint_states):
-        dh_params = np.array(self.arm_params)        
-        for i in range(len(joint_states)):
-            dh_params[i][0] += joint_states[i]
+    # def get_H_Jacobian(self, joint_states):
+    #     dh_params = np.array(self.arm_params)        
+    #     for i in range(len(joint_states)):
+    #         dh_params[i][0] += joint_states[i]
 
-        H_list= np.array([])
-        H = np.eye(len(dh_params))
-        for i in range(0, till_i):
-            H = H @ self.__calculate_dh_transform(*dh_params[i])
+    #     H_list= np.array([])
+    #     H = np.eye(len(dh_params))
+    #     for i in range(0, till_i):
+    #         H = H @ self.__calculate_dh_transform(*dh_params[i])
 
-        return H
+    #     return H
     
-    def translated_origin(self, H):
-        coord = np.transpose(np.array([0,0,0,1]))
-        return H @ coord
+    # def translated_origin(self, H):
+    #     coord = np.transpose(np.array([0,0,0,1]))
+    #     return H @ coord
     
-    def translated_z(self, H):
-        z_axis=np.transpose(np.array([0,0,1]))
-        R= H[:3,:3]
-        return R @ z_axis
+    # def translated_z(self, H):
+    #     z_axis=np.transpose(np.array([0,0,1]))
+    #     R= H[:3,:3]
+    #     return R @ z_axis
         
     def get_eef_pose(self, joint_states):
         if self.arm_params is None:
@@ -115,6 +115,15 @@ class Arm:
             all_H.append(H)
 
         return all_H
+    
+
+#     J-  [[ 5.30054613e+01 -4.46374256e+01 -7.10920535e+01 -1.01714119e+01]
+#  [-3.40344153e+01 -6.95186714e+01 -1.10719313e+02 -1.58410355e+01]
+#  [ 0.00000000e+00  6.29914308e+01  1.83667207e+02  1.32064999e+02]
+#  [ 0.00000000e+00 -8.41470985e-01 -8.41470985e-01 -8.41470985e-01]
+#  [ 0.00000000e+00  5.40302306e-01  5.40302306e-01  5.40302306e-01]
+#  [ 1.00000000e+00  6.12323400e-17  6.12323400e-17  6.12323400e-17]]
+
 
     def get_J(self, joint_states):
         all_H= self.get_all_H(joint_states)
@@ -137,16 +146,16 @@ class Arm:
         return Ji
 
     def get_zi(self, i, all_H):
-        z=np.array([0,0,1,0])
+        z=np.array([0,0,1])
         if i>0:
-            return (all_H[i] @ z)[:3]
+            return (np.linalg.inv(all_H[i-1][:3,:3]) @ z)
         return z[:3]
 
     def get_o_dist(self, i, all_H):
         o= np.array([0,0,0,1])
-        o4= all_H[-1] @ o
+        o4= np.linalg.inv(all_H[-1]) @ o
         if i>0:
-            o= all_H[i-1] @ o
+            o= np.linalg.inv(all_H[i-1]) @ o
         return (o4-o)[:3]    
 
 
