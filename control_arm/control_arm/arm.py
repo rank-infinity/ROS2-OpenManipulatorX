@@ -39,8 +39,33 @@ class Arm:
         a4 = 133.4  # Link 4 length
         return np.array([a1, l2a, l2b, a2,  a3, a4])
 
-    def calculate_jacobian(self):
-        pass
+    def __calculate_Jacobian(self, joint_states):
+        dh_params = np.array(self.arm_params)        
+        for i in range(len(joint_states)):
+            dh_params[i][0] += joint_states[i]
+
+        Ai = []
+        z_0 = []
+        o_0 = [np.array([0.0, 0.0, 0.0])]
+        Ji = []
+
+        for i in range(len(dh_params)):
+            Ai.append(self.__calculate_dh_transform(*dh_params[i]))
+
+        H = np.eye(len(dh_params))
+        for i in range(len(dh_params)):
+            z_0.append(H[0:3, 2])            
+            H = H @ Ai[i]
+            o_0.append(H[0:3, -1])
+        
+        for i in range(len(dh_params)):
+            Ji_v = np.cross(z_0[0], o_0[-1] - o_0[i])
+            Ji_omega = z_0[i]
+            Ji.append(np.hstack((Ji_v, Ji_omega)))
+
+        J = np.array(Ji).T
+
+        return J
     
 
 # UNCOMMENT AND WORK ON THIS
